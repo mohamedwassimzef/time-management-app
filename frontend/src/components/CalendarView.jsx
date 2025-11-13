@@ -5,6 +5,8 @@ import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { api } from "../services/api";
 import DayControl from "./DayControl";
+import axios from "axios";
+
 //localizer setup to enable date formatting in the calendar
 const localizer = momentLocalizer(moment);
 
@@ -27,6 +29,9 @@ export default function CalendarView() {
   const fetchTasks = async () => {
     try {
       const res = await api.get("/tasks");
+      
+      
+
       // Transform tasks into calendar events
       const formatted = res.data.map((task) => ({
         id: task._id,

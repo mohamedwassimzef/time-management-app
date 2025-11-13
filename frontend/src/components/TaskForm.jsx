@@ -8,7 +8,7 @@ export default function TaskForm({ initialData = null, onSave, onCancel }) {
   const [notes, setNotes] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState(0);
-  const [deadline, setDeadline] = useState(null);
+  const [deadline, setDeadline] = useState("");
   const [status, setStatus] = useState("pending");
   useEffect(() => {
     
