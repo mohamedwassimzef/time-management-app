@@ -12,7 +12,7 @@ dotenv.config();
 const app = express();
 
 // Middlewares
-const PORT = process.env.PORT || 3000;  // use Render's assigned port
+const PORT = process.env.PORT || 5000;  // use Render's assigned port
 
 app.use(cors());
 app.use(express.json()); // Allows parsing JSON in request body
