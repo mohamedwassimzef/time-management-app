@@ -12,6 +12,8 @@ dotenv.config();
 const app = express();
 
 // Middlewares
+const PORT = process.env.PORT || 3000;  // use Render's assigned port
+
 app.use(cors());
 app.use(express.json()); // Allows parsing JSON in request body
 
@@ -24,6 +26,6 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ MongoDB connected");
-    app.listen(5000, () => console.log("🚀 Server running on port 5000"));
+    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
   })
   .catch((err) => console.error("❌ MongoDB connection error:", err));
