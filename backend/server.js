@@ -1,0 +1,29 @@
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import dotenv from "dotenv";
+
+// Import task routes
+import taskRoutes from "./routes/task.routes.js";
+import dayRoutes from "./routes/days.routes.js";  
+
+dotenv.config();
+
+const app = express();
+
+// Middlewares
+app.use(cors());
+app.use(express.json()); // Allows parsing JSON in request body
+
+// Routes
+app.use("/api/tasks", taskRoutes); // All routes start with /api/tasks
+app.use("/api/days", dayRoutes);   // All routes start with /api/days
+
+// Connect to MongoDB
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("✅ MongoDB connected");
+    app.listen(5000, () => console.log("🚀 Server running on port 5000"));
+  })
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
