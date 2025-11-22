@@ -86,10 +86,14 @@ export default function TaskForm({ initialData = null, onSave, onCancel }) {
       <TextField 
         label="Priority" 
         value={priority} 
-        onChange={(e) => setPriority(Number(e.target.value))}
+        onChange={(e) => {
+          const value = e.target.value;
+          setPriority(value === '' ? '' : Number(value));
+        }}
         fullWidth
         size="medium"
         type="number"
+        inputProps={{ min: 0 }}
         sx={{
           '& .MuiInputBase-root': {
             fontSize: { xs: '14px', sm: '16px' }
