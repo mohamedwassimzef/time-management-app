@@ -10,6 +10,7 @@ function App() {
     const saved = localStorage.getItem('theme-mode');
     return saved || 'light';
   });
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const theme = useMemo(
     () =>
@@ -72,6 +73,7 @@ function App() {
             boxShadow: 2,
             minWidth: 44,
             minHeight: 44,
+            display: drawerOpen ? 'none' : 'flex',
             '&:hover': {
               bgcolor: 'action.hover',
             },
@@ -80,7 +82,7 @@ function App() {
           {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
         </IconButton>
         <Box sx={{ width: '100%', maxWidth: '100%', px: { xs: 0, sm: 2 } }}>
-          <C3 />
+          <C3 onDrawerChange={setDrawerOpen} />
         </Box>
       </Box>
     </ThemeProvider>

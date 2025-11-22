@@ -3,7 +3,7 @@ import "./c3.css";
 import DayControl from "./DayControl";
 import { api } from "../services/api";
 
-export default function Calendar() {
+export default function Calendar({ onDrawerChange }) {
   const [date, setDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -15,6 +15,12 @@ export default function Calendar() {
   useEffect(() => {
     fetchTasks();
   }, [drawerOpen]);
+
+  useEffect(() => {
+    if (onDrawerChange) {
+      onDrawerChange(drawerOpen);
+    }
+  }, [drawerOpen, onDrawerChange]);
 
   const fetchTasks = async () => {
     try {

@@ -74,15 +74,20 @@ export default function DayControl({ open, onClose, selectedDate }) {
         flexDirection: 'column'
       }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-          <Typography variant="h6" sx={{ fontSize: { xs: '18px', sm: '20px' } }}>
+          <Typography variant="h6" sx={{ fontSize: { xs: '18px', sm: '20px' }, flex: 1 }}>
             Tasks — {new Date(selectedDate).toDateString()}
           </Typography>
           <IconButton 
             onClick={onClose}
             sx={{ 
               minWidth: 44, 
-              minHeight: 44 
+              minHeight: 44,
+              bgcolor: 'action.hover',
+              '&:hover': {
+                bgcolor: 'action.selected',
+              }
             }}
+            aria-label="close"
           >
             <CloseIcon />
           </IconButton>
