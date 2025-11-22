@@ -55,44 +55,79 @@ export default function DayControl({ open, onClose, selectedDate }) {
   };
 
   return (
-    <Drawer anchor="right" open={open} onClose={onClose}>
-      <Box sx={{ width: 400, p: 3 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography variant="h6">
+    <Drawer 
+      anchor="right" 
+      open={open} 
+      onClose={onClose}
+      PaperProps={{
+        sx: {
+          width: { xs: '100%', sm: '100%', md: 400 },
+          maxWidth: '100%'
+        }
+      }}
+    >
+      <Box sx={{ 
+        width: '100%', 
+        height: '100%',
+        p: { xs: 2, sm: 3 },
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+          <Typography variant="h6" sx={{ fontSize: { xs: '18px', sm: '20px' } }}>
             Tasks — {new Date(selectedDate).toDateString()}
           </Typography>
-          <IconButton onClick={onClose}>
+          <IconButton 
+            onClick={onClose}
+            sx={{ 
+              minWidth: 44, 
+              minHeight: 44 
+            }}
+          >
             <CloseIcon />
           </IconButton>
         </Box>
 
-        <List>
-          {tasks.length > 0 ? (
-            tasks.map((task) => (
-              <TaskItem
-                key={task._id}
-                task={task}
-                
-                onEdit={() => {
-                  console.log("Editing task:", task);
-                  setEditTask(task);
-                  setShowForm(true);
-                }}
-                onDelete={() => handleDelete(task._id)}
-              />
-            ))
-          ) : (
-            <Typography sx={{ mt: 2, color: "gray" }}>
-              No tasks for this day.
-            </Typography>
-          )}
-        </List>
+        <Box sx={{ 
+          flex: 1, 
+          overflowY: 'auto', 
+          mb: 2,
+          display: { xs: showForm ? 'none' : 'block', md: 'block' }
+        }}>
+          <List>
+            {tasks.length > 0 ? (
+              tasks.map((task) => (
+                <TaskItem
+                  key={task._id}
+                  task={task}
+                  
+                  onEdit={() => {
+                    console.log("Editing task:", task);
+                    setEditTask(task);
+                    setShowForm(true);
+                  }}
+                  onDelete={() => handleDelete(task._id)}
+                />
+              ))
+            ) : (
+              <Typography sx={{ mt: 2, color: "gray", fontSize: { xs: '14px', sm: '16px' } }}>
+                No tasks for this day.
+              </Typography>
+            )}
+          </List>
+        </Box>
 
         <Button
           startIcon={<AddIcon />}
           variant="contained"
           color="primary"
-          sx={{ mt: 2 }}
+          fullWidth
+          sx={{ 
+            minHeight: { xs: 48, sm: 44 },
+            fontSize: { xs: '15px', sm: '16px' },
+            mb: showForm ? 2 : 0,
+            display: { xs: showForm ? 'none' : 'flex', md: 'flex' }
+          }}
           onClick={() => {
             setEditTask(null);
             setShowForm(true);
@@ -102,11 +137,19 @@ export default function DayControl({ open, onClose, selectedDate }) {
         </Button>
 
         {showForm && (
-          <TaskForm
-            initialData={editTask}
-            onSave={handleSave}
-            onCancel={() => setShowForm(false)}
-          />
+          <Box sx={{ 
+            borderTop: { xs: 'none', md: '1px solid #e0e0e0' },
+            pt: { xs: 0, md: 2 },
+            maxHeight: { xs: '100%', md: 'auto' },
+            overflowY: 'auto',
+            flex: { xs: 1, md: 'initial' }
+          }}>
+            <TaskForm
+              initialData={editTask}
+              onSave={handleSave}
+              onCancel={() => setShowForm(false)}
+            />
+          </Box>
         )}
       </Box>
     </Drawer>

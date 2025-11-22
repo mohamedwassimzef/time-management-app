@@ -1,10 +1,8 @@
 ﻿import CalendarView from "./components/CalendarView";
-
+import C3 from "./components/c3";
 function App() {
   return (
-    <div style={{ display: "grid", placeItems: "center", height: "100vh", width: "100%" }}>
-      <CalendarView />
-    </div>
+   <C3 />
   );
 }
 

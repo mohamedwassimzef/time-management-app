@@ -1,0 +1,7 @@
+/* Import calendar CSS first */
+@import "@ilamy/calendar/dist/calendar.css";
+
+/* Tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
