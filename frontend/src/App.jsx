@@ -48,44 +48,51 @@ function App() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Box 
-        sx={{ 
-          position: 'relative', 
-          minHeight: '100vh',
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          overflow: 'auto'
-        }} 
-        className={mode}
-      >
-        <IconButton
-          onClick={toggleTheme}
-          sx={{
-            position: 'fixed',
-            top: { xs: 8, sm: 16 },
-            right: { xs: 8, sm: 16 },
-            zIndex: 1300,
-            bgcolor: 'background.paper',
-            boxShadow: 2,
-            minWidth: 44,
-            minHeight: 44,
-            display: drawerOpen ? 'none' : 'flex',
-            '&:hover': {
-              bgcolor: 'action.hover',
-            },
-          }}
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        width: '100%',
+        py: { xs: 2, sm: 4, md: 6 },
+      }}
+    >
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Box 
+          sx={{ 
+            position: 'relative',
+            width: { xs: '100%', sm: '90%', md: '75%', lg: '50%' },
+            maxWidth: '1200px',
+          }} 
+          className={mode}
         >
-          {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-        </IconButton>
-        <Box sx={{ width: '100%', maxWidth: '100%', px: { xs: 0, sm: 2 } }}>
-          <C3 onDrawerChange={setDrawerOpen} />
+          <IconButton
+            onClick={toggleTheme}
+            sx={{
+              position: 'absolute',
+              top: { xs: 8, sm: 16 },
+              right: { xs: 8, sm: 16 },
+              zIndex: 1300,
+              bgcolor: 'background.paper',
+              boxShadow: 2,
+              minWidth: 44,
+              minHeight: 44,
+              display: drawerOpen ? 'none' : 'flex',
+              '&:hover': {
+                bgcolor: 'action.hover',
+              },
+            }}
+          >
+            {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+          </IconButton>
+          <Box sx={{ width: '100%', px: { xs: 1, sm: 2 } }}>
+            <C3 onDrawerChange={setDrawerOpen} />
+          </Box>
         </Box>
-      </Box>
-    </ThemeProvider>
+      </ThemeProvider>
+    </Box>
   );
 }
 
