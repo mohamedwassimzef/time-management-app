@@ -41,8 +41,11 @@ export const loginUser = async (req, res) => {
         process.env.JWT_SECRET,
         { expiresIn: "7d" }
     );
-    res.status(200).json({ token, user: existingUser });
-    console.log("✅ User logged in:", existingUser);
+    
+    // Get user without password
+    const userWithoutPassword = await User.findById(existingUser._id).select("-password");
+    res.status(200).json({ token, user: userWithoutPassword });
+    console.log("✅ User logged in:", userWithoutPassword);
 
     
     } catch (error) {

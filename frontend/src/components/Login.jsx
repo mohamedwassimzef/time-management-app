@@ -27,6 +27,7 @@ export default function SignIn() {
         alert(json.message || "Login failed");
       } else {
         // Save token in localStorage
+        console.log(json);
         localStorage.setItem("token", json.token);
         login(json.user, json.token);
         navigate("/");

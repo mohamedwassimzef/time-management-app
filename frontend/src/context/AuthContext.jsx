@@ -1,4 +1,6 @@
 import { createContext, useState, useEffect, useContext } from "react";
+import { data } from "react-router-dom";
+import { api } from "../services/api";
 
 export const AuthContext = createContext();
 
@@ -16,19 +18,25 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true); // 🟢 new loading state
 
-  useEffect(() => {
-    if (token) {
-      fetch("/api/users/me", {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-        .then(res => res.json())
-        .then(data => setUser(data))
-        .catch(() => setUser(null))
-        .finally(() => setLoading(false)); // 🟢 stop loading after fetch
-    } else {
-      setLoading(false); // 🟢 no token → loading done
-    }
-  }, [token]);
+ useEffect(() => {
+  if (token && !user) {
+    const fetchUser = async () => {
+      try {
+        // Using your api instance (axios)
+        const res = await api.get("/users/me"); // assuming api is axios
+        setUser(res.data); // axios puts JSON in res.data
+      } catch (error) {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser(); // call the async function
+  } else {
+    setLoading(false);
+  }
+}, [token]);
 
   const updateToken = (jwtToken) => {
     localStorage.setItem("token", jwtToken);
