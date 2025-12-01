@@ -39,7 +39,7 @@ export const loginUser = async (req, res) => {
     const token = jwt.sign(
         { userId: existingUser._id, email: existingUser.email },
         process.env.JWT_SECRET,
-        { expiresIn: "1h" }
+        { expiresIn: "7d" }
     );
     res.status(200).json({ token, user: existingUser });
     console.log("✅ User logged in:", existingUser);
@@ -49,6 +49,17 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ message: error.message });
     }
 };
+
+
+export const getCurrentUser = async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.user.email }).select("-password");
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 
 export const getUserProfile = async (req, res) => {
 

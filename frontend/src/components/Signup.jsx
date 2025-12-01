@@ -1,11 +1,33 @@
 import { useForm } from "react-hook-form";
 import { TextField, Button, Box, Typography } from "@mui/material";
+import { redirect, useNavigate } from "react-router-dom";
 
 export default function Signup() {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const navigate = useNavigate();
+  const { register, handleSubmit, formState: { errors }, watch } = useForm({
+    mode: "onBlur" // Validate when user leaves the field
+  });
 
-  const onSubmit = (data) => {
-    console.log(data); // send to backend
+  const onSubmit = async(data) => {
+    try {
+      const res = await fetch("http://localhost:5000/api/users/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      
+      const respon = await res.json();
+      console.log(respon);
+
+      if (res.ok) {
+        navigate("/");
+      } else {
+        console.error(respon.message || "Signup failed");
+      }
+    } catch (error) {
+      alert("Server error");
+      console.error(error);
+    }
   };
 
   return (
@@ -45,7 +67,13 @@ export default function Signup() {
         label="Email"
         type="email"
         fullWidth
-        {...register("email", { required: "Email is required" })}
+        {...register("email", { 
+          required: "Email is required",
+          pattern: {
+            value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+            message: "Please enter a valid email address"
+          }
+        })}
         error={!!errors.email}
         helperText={errors.email?.message}
       />
@@ -54,9 +82,28 @@ export default function Signup() {
         label="Password"
         type="password"
         fullWidth
-        {...register("password", { required: "Password is required", minLength: 6 })}
+        {...register("password", { 
+          required: "Password is required", 
+          minLength: { value: 8, message: "Password must be at least 8 characters" },
+          pattern: {
+            value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+            message: "Password must contain uppercase, lowercase, number, and special character"
+          }
+        })}
         error={!!errors.password}
         helperText={errors.password?.message}
+      />
+
+      <TextField
+        label="Confirm Password"
+        type="password"
+        fullWidth
+        {...register("confirmPassword", { 
+          required: "Please confirm your password",
+          validate: (value) => value === watch("password") || "Passwords do not match"
+        })}
+        error={!!errors.confirmPassword}
+        helperText={errors.confirmPassword?.message}
       />
 
       <TextField

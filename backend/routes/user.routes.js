@@ -4,6 +4,7 @@ import {
   loginUser,
   bigRegistration,
   updateUserProfile,
+  getCurrentUser,
   deleteUser
 } from "../controllers/user.controller.js";
 import { protect } from "../middlewares/auth.middleware.js";
@@ -15,4 +16,5 @@ router.post("/login", loginUser);
 router.post("/big", bigRegistration);
 router.patch("/update", protect, updateUserProfile);
 router.delete("/delete", protect, deleteUser);
+router.get("/me", protect, getCurrentUser);
 export default router;

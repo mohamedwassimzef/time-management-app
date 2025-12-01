@@ -4,12 +4,14 @@ import C3 from "./components/c3";
 import Calendar from "./components/Calendar";
 import Signup from "./components/Signup";
 import Login from "./components/Login";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 function App() {
   return (
-    <Router>
+    <AuthProvider>
+      <Router>
       <Routes>
-        <Route path="/" element={<Calendar />} />
-        <Route path="/c3" element={<C3 />} />
+        <Route path="/" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         { /* the old calendar view  */ }
@@ -17,6 +19,7 @@ function App() {
         
       </Routes>
     </Router>
+    </AuthProvider>
   );
 }
 

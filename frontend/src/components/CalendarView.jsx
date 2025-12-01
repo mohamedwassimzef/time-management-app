@@ -6,6 +6,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import { api } from "../services/api";
 import DayControl from "./DayControl";
 import axios from "axios";
+import { AuthContext } from "../context/AuthContext";
 
 //localizer setup to enable date formatting in the calendar
 const localizer = momentLocalizer(moment);
@@ -16,8 +17,8 @@ export default function CalendarView() {
   const [events, setEvents] = useState([]); //Stores the list of tasks/events to show on the calendar.
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState("month"); // default view
-
-  
+  const { user } = useContext(AuthContext);
+  const [userState, setUserState] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null); // ← State to control DayControl drawer
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -53,6 +54,7 @@ export default function CalendarView() {
 
   return (
     <>
+      {console.log("User in CalendarView:", user)}
       <div className="app-container">
         <h1>📅 My Agenda</h1>
         <div className="calendar-wrapper">

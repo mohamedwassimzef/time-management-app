@@ -1,17 +1,21 @@
 import { useForm } from "react-hook-form";
-import { TextField, Button, Box, Typography, Paper, Link as MuiLink } from "@mui/material";
+import { TextField, Button, Box, Typography, Paper, Link as MuiLink, IconButton, InputAdornment } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState } from "react";
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
+import {useAuth } from "../context/AuthContext";
 export default function SignIn() {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { register, handleSubmit, formState: { errors } } = useForm();
+  const { login } = useAuth();
 
   const onSubmit = async (data) => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch("http://localhost:5000/api/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -24,11 +28,12 @@ export default function SignIn() {
       } else {
         // Save token in localStorage
         localStorage.setItem("token", json.token);
-        alert("Logged in successfully!");
+        login(json.user, json.token);
+        navigate("/");
       }
 
     } catch (err) {
-      alert("Server error");
+      console.error(err);
     }
 
     setLoading(false);
@@ -77,12 +82,24 @@ export default function SignIn() {
 
           <TextField
             label="Password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="••••••••"
             fullWidth
             {...register("password", { required: "Password is required" })}
             error={!!errors.password}
             helperText={errors.password?.message}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowPassword(!showPassword)}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
 
           <Button
