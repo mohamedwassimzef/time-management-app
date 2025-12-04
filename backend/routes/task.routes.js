@@ -9,7 +9,8 @@ import {
   createUserTask,
   deleteTasksByUser,
   DeleteAll,
-  getTasksByUser
+  getTasksByUser,
+  updateUserTask
 } from "../controllers/task.controller.js";
 import { protect } from "../middlewares/auth.middleware.js";
 
@@ -28,14 +29,14 @@ router.post("/user", protect, createUserTask);
 
 router.get("/", getTasks);
 router.get("/user", protect, getTasksByUser);
-router.delete("/user", protect, deleteTasksByUser);
 router.get("/:id", getTaskById);
 
-
+router.patch("/user", protect, updateUserTask);
 router.patch("/:id", updateTask);
 
 
-router.delete("/:id", deleteTask);
 router.delete("/", DeleteAll);
+router.delete("/user", protect, deleteTasksByUser);
+router.delete("/:id", deleteTask);
 
 export default router;

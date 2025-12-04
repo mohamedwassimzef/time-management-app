@@ -19,7 +19,7 @@ export default function DayControl({ open, onClose, selectedDate }) {
   const [tasks, setTasks] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editTask, setEditTask] = useState(null);
-  const { user } = useAuth();
+  const { user , token } = useAuth();
 // useEffect to fetch tasks when drawer opens or selectedDate changes
   useEffect(() => {
     if (open && selectedDate) fetchTasks();
@@ -27,17 +27,23 @@ export default function DayControl({ open, onClose, selectedDate }) {
 
   const fetchTasks = async () => {
     try {
-      const res = await api.get("/tasks");
-      const sameDay = res.data.filter(
+      const res = await api.get("/tasks/user", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const data = Array.isArray(res.data) ? res.data : [];
+      const sameDay = data.filter(
         (t) =>
           new Date(t.deadline).toDateString() ===
           new Date(selectedDate).toDateString()
       );
       setTasks(sameDay);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching tasks Day controller listing:", err);
+      setTasks([]); // Set empty array on error
     }
-  };
+  };  
 // Events handlers
   const handleDelete = async (id) => {
     await api.delete(`/tasks/${id}`);
@@ -52,14 +58,29 @@ export default function DayControl({ open, onClose, selectedDate }) {
     
     try {
       if (editTask) {
-        await api.patch(`/tasks/${editTask._id}`, taskData);
+        console.log("Updating task:", editTask._id);
+        console.log("With data:", taskData);
+        const body = { _id: editTask._id, ...taskData };
+        console.log("Request body for update:", body);
+        const res= await api.patch(`/tasks/user`, body,{
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+                console.log("Response from update:", res);
+
       } else {
+        console.log("token:", token);
         const newTask = {
           ...taskData,
           deadline: taskData.deadline || selectedDate,
           user: user._id
         };
-        await api.post("/tasks", newTask);
+        await api.post("/tasks/user", newTask, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
       }
       setShowForm(false);
       setEditTask(null);
@@ -121,7 +142,7 @@ export default function DayControl({ open, onClose, selectedDate }) {
             {tasks.length > 0 ? (
               tasks.map((task) => (
                 <TaskItem
-                  key={task._id}
+                  
                   task={task}
                   
                   onEdit={() => {

@@ -24,11 +24,15 @@ export default function Calendar({ onDrawerChange }) {
 
   const fetchTasks = async () => {
     try {
-      const res = await api.get("/tasks/user");
-      setEvents(res.data);
+      const res = await api.get("/tasks/user", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setEvents(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
-      console.error(`Error fetching tasks:`, err);
-      console.error(`Error response:`, err.response);
+      console.error(`Error fetching tasks for user: ${token}`, err);
+      setEvents([]);
     }
   };
 

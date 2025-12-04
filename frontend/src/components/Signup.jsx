@@ -1,32 +1,26 @@
 import { useForm } from "react-hook-form";
 import { TextField, Button, Box, Typography } from "@mui/material";
 import { redirect, useNavigate } from "react-router-dom";
-
+import { api } from "../services/api";
 export default function Signup() {
   const navigate = useNavigate();
   const { register, handleSubmit, formState: { errors }, watch } = useForm({
     mode: "onBlur" // Validate when user leaves the field
   });
 
-  const onSubmit = async(data) => {
+  const onSubmit = async (data) => {
     try {
-      const res = await fetch("http://localhost:5000/api/users/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      
-      const respon = await res.json();
-      console.log(respon);
+      // using your app's API service (axios-style)
+      const res = await api.post("/users/register", data);
 
-      if (res.ok) {
+      if (res?.status >= 200 && res?.status < 300) {
         navigate("/");
       } else {
-        console.error(respon.message || "Signup failed");
+        console.error(res?.data?.message || "Signup failed");
       }
     } catch (error) {
-      alert("Server error");
       console.error(error);
+      alert(error?.response?.data?.message || "Server error");
     }
   };
 

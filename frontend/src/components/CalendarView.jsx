@@ -42,7 +42,7 @@ export default function CalendarView() {
       }));
       setEvents(formatted);
     } catch (err) {
-      console.error("Error fetching tasks:", err);
+      console.error("Error fetching tasks CalendarView:", err);
     }
   };
 
