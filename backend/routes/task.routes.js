@@ -8,6 +8,7 @@ import {
   createBulkTasks,
   createUserTask,
   deleteTasksByUser,
+  deleteUserTask,
   DeleteAll,
   getTasksByUser,
   updateUserTask
@@ -36,7 +37,7 @@ router.patch("/:id", updateTask);
 
 
 router.delete("/", DeleteAll);
-router.delete("/user", protect, deleteTasksByUser);
+router.delete("/user", protect, deleteUserTask);
 router.delete("/:id", deleteTask);
 
 export default router;

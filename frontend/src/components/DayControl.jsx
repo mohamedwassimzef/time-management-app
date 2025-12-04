@@ -46,8 +46,14 @@ export default function DayControl({ open, onClose, selectedDate }) {
   };  
 // Events handlers
   const handleDelete = async (id) => {
-    await api.delete(`/tasks/${id}`);
-    fetchTasks();
+    try {
+      await api.delete(`/tasks/user`, {
+        data: { _id: id }
+      });
+      fetchTasks();
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
   };
 
   const handleSave = async (taskData) => {

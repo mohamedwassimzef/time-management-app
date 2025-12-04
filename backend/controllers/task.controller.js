@@ -75,9 +75,8 @@ export const DeleteAll = async (req, res) => {
 
 export const deleteTasksByUser = async (req, res) => {
   try {
-    console.log("🔵 DELETE TASKS BY USER ENDPOINT HIT");
+    console.log("🔵 DELETE ALL TASKS BY USER ENDPOINT HIT");
     console.log("📥 req.user.userId:", req.user.userId);
-    
     const userId = new mongoose.Types.ObjectId(req.user.userId);
     const result = await Task.deleteMany({ user: userId });
     
@@ -85,6 +84,31 @@ export const deleteTasksByUser = async (req, res) => {
     console.log("✅ Deleted", result.deletedCount, "tasks for user:", req.user.userId);
   } catch (error) {
     console.error("❌ Error deleting tasks for user:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Delete a single task by ID (with authentication)
+export const deleteUserTask = async (req, res) => {
+  try {
+    console.log("🔵 DELETE SINGLE TASK ENDPOINT HIT");
+    console.log("📥 Task ID:", req.body._id);
+    console.log("📥 User ID:", req.user.userId);
+    
+    const userId = new mongoose.Types.ObjectId(req.user.userId);
+    const taskId = new mongoose.Types.ObjectId(req.body._id);
+    
+    // Delete only if the task belongs to the authenticated user
+    const result = await Task.deleteOne({ _id: taskId, user: userId });
+    
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: "Task not found or unauthorized" });
+    }
+    
+    res.status(200).json({ message: "Task deleted successfully" });
+    console.log("✅ Deleted task:", req.body._id);
+  } catch (error) {
+    console.error("❌ Error deleting task:", error);
     res.status(500).json({ message: error.message });
   }
 };
