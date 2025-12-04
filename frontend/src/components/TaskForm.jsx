@@ -16,7 +16,10 @@ export default function TaskForm({ initialData = null, onSave, onCancel }) {
     setTitle(initialData.title || "");
     setNotes(initialData.notes || "");
     setPriority(initialData.priority ?? 0);
-    setDeadline(initialData.deadline ?? "");
+    // Convert ISO datetime to datetime-local format (yyyy-MM-ddThh:mm)
+    const isoDeadline = initialData.deadline || "";
+    const localDeadline = isoDeadline ? new Date(isoDeadline).toISOString().slice(0, 16) : "";
+    setDeadline(localDeadline);
     setStatus(initialData.status || "pending");
     setDescription(initialData.description || "");
   } else {

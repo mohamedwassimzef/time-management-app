@@ -119,6 +119,16 @@ export default function Signup() {
       <Button type="submit" variant="contained" size="large" fullWidth>
         Sign Up
       </Button>
+
+      <Button 
+        variant="text" 
+        size="large" 
+        fullWidth
+        onClick={() => navigate("/login")}
+        sx={{ mt: 1 }}
+      >
+        Already have an account? Sign In
+      </Button>
     </Box>
   );
 }

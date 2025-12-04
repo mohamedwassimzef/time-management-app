@@ -1,0 +1,266 @@
+[
+  {
+    "title": "Complete project proposal",
+    "description": "Finalize and submit the Q1 project proposal to the management team",
+    "priority": 1,
+    "deadline": "2025-12-10T14:00:00.000Z",
+    "status": "in progress",
+    "user": "6922ec50f51f39dd1204c5cd"
+  },
+  {
+    "title": "Team meeting preparation",
+    "description": "Prepare slides and agenda for the weekly team sync",
+    "priority": 2,
+    "deadline": "2025-12-05T09:00:00.000Z",
+    "status": "pending",
+    "user": "6922ec50f51f39dd1204c5cd"
+  },
+  {
+    "title": "Code review",
+    "description": "Review pull requests from the development team",
+    "priority": 3,
+    "deadline": "2025-12-06T17:00:00.000Z",
+    "status": "pending",
+    "user": "6922ec50f51f39dd1204c5cd"
+  },
+  {
+    "title": "Database optimization",
+    "description": "Optimize database queries for better performance",
+    "priority": 1,
+    "deadline": "2025-12-08T16:00:00.000Z",
+    "status": "in progress",
+    "user": "692c17f43096b46da13ac541"
+  },
+  {
+    "title": "API documentation",
+    "description": "Update API documentation with new endpoints",
+    "priority": 2,
+    "deadline": "2025-12-07T12:00:00.000Z",
+    "status": "pending",
+    "user": "692c17f43096b46da13ac541"
+  },
+  {
+    "title": "Security audit",
+    "description": "Conduct security audit on authentication system",
+    "priority": 1,
+    "deadline": "2025-12-12T18:00:00.000Z",
+    "status": "pending",
+    "user": "692c17f43096b46da13ac541"
+  },
+  {
+    "title": "UI/UX improvements",
+    "description": "Implement new design system for dashboard",
+    "priority": 2,
+    "deadline": "2025-12-15T15:00:00.000Z",
+    "status": "in progress",
+    "user": "692c17f43096b46da13ac544"
+  },
+  {
+    "title": "Mobile responsiveness",
+    "description": "Fix mobile layout issues on profile page",
+    "priority": 3,
+    "deadline": "2025-12-09T11:00:00.000Z",
+    "status": "done",
+    "user": "692c17f43096b46da13ac544"
+  },
+  {
+    "title": "User testing session",
+    "description": "Organize and conduct user testing for new features",
+    "priority": 1,
+    "deadline": "2025-12-11T10:00:00.000Z",
+    "status": "pending",
+    "user": "692c17f43096b46da13ac544"
+  },
+  {
+    "title": "Deploy to staging",
+    "description": "Deploy latest version to staging environment for testing",
+    "priority": 1,
+    "deadline": "2025-12-06T13:00:00.000Z",
+    "status": "in progress",
+    "user": "692c17f53096b46da13ac547"
+  },
+  {
+    "title": "CI/CD pipeline setup",
+    "description": "Configure automated deployment pipeline",
+    "priority": 2,
+    "deadline": "2025-12-14T16:00:00.000Z",
+    "status": "pending",
+    "user": "692c17f53096b46da13ac547"
+  },
+  {
+    "title": "Monitor server metrics",
+    "description": "Set up monitoring for server performance metrics",
+    "priority": 3,
+    "deadline": "2025-12-13T14:00:00.000Z",
+    "status": "pending",
+    "user": "692c17f53096b46da13ac547"
+  },
+  {
+    "title": "Client presentation",
+    "description": "Prepare presentation for client stakeholder meeting",
+    "priority": 1,
+    "deadline": "2025-12-16T10:00:00.000Z",
+    "status": "pending",
+    "user": "692c18183096b46da13ac54a"
+  },
+  {
+    "title": "Budget planning",
+    "description": "Review and plan Q2 budget allocations",
+    "priority": 2,
+    "deadline": "2025-12-20T17:00:00.000Z",
+    "status": "in progress",
+    "user": "692c18183096b46da13ac54a"
+  },
+  {
+    "title": "Team training",
+    "description": "Organize training session on new technologies",
+    "priority": 3,
+    "deadline": "2025-12-18T13:00:00.000Z",
+    "status": "pending",
+    "user": "692c18183096b46da13ac54a"
+  },
+  {
+    "title": "Feature development",
+    "description": "Implement payment gateway integration",
+    "priority": 1,
+    "deadline": "2025-12-22T15:00:00.000Z",
+    "status": "in progress",
+    "user": "692c18183096b46da13ac54d"
+  },
+  {
+    "title": "Bug fixes",
+    "description": "Fix critical bugs reported in production",
+    "priority": 1,
+    "deadline": "2025-12-05T20:00:00.000Z",
+    "status": "done",
+    "user": "692c18183096b46da13ac54d"
+  },
+  {
+    "title": "Unit testing",
+    "description": "Write unit tests for new payment module",
+    "priority": 2,
+    "deadline": "2025-12-23T12:00:00.000Z",
+    "status": "pending",
+    "user": "692c18183096b46da13ac54d"
+  },
+  {
+    "title": "Marketing campaign",
+    "description": "Launch social media campaign for new product",
+    "priority": 2,
+    "deadline": "2025-12-17T14:00:00.000Z",
+    "status": "in progress",
+    "user": "692c18183096b46da13ac550"
+  },
+  {
+    "title": "Content creation",
+    "description": "Create blog posts for December publishing schedule",
+    "priority": 3,
+    "deadline": "2025-12-19T11:00:00.000Z",
+    "status": "pending",
+    "user": "692c18183096b46da13ac550"
+  },
+  {
+    "title": "Analytics review",
+    "description": "Analyze website traffic and user engagement metrics",
+    "priority": 2,
+    "deadline": "2025-12-21T16:00:00.000Z",
+    "status": "pending",
+    "user": "692c18183096b46da13ac550"
+  },
+  {
+    "title": "Infrastructure upgrade",
+    "description": "Upgrade server infrastructure to support scaling",
+    "priority": 1,
+    "deadline": "2025-12-25T13:00:00.000Z",
+    "status": "pending",
+    "user": "692c18193096b46da13ac553"
+  },
+  {
+    "title": "Backup system",
+    "description": "Implement automated backup system for databases",
+    "priority": 1,
+    "deadline": "2025-12-24T15:00:00.000Z",
+    "status": "in progress",
+    "user": "692c18193096b46da13ac553"
+  },
+  {
+    "title": "Load testing",
+    "description": "Conduct load testing for peak traffic scenarios",
+    "priority": 2,
+    "deadline": "2025-12-26T17:00:00.000Z",
+    "status": "pending",
+    "user": "692c18193096b46da13ac553"
+  },
+  {
+    "title": "Customer support tickets",
+    "description": "Review and respond to pending customer support tickets",
+    "priority": 2,
+    "deadline": "2025-12-07T10:00:00.000Z",
+    "status": "in progress",
+    "user": "692c18193096b46da13ac556"
+  },
+  {
+    "title": "Knowledge base update",
+    "description": "Update help documentation with new features",
+    "priority": 3,
+    "deadline": "2025-12-28T14:00:00.000Z",
+    "status": "pending",
+    "user": "692c18193096b46da13ac556"
+  },
+  {
+    "title": "Customer feedback analysis",
+    "description": "Analyze customer feedback from recent surveys",
+    "priority": 2,
+    "deadline": "2025-12-27T12:00:00.000Z",
+    "status": "pending",
+    "user": "692c18193096b46da13ac556"
+  },
+  {
+    "title": "Research new technologies",
+    "description": "Research and evaluate new frontend frameworks",
+    "priority": 3,
+    "deadline": "2025-12-30T16:00:00.000Z",
+    "status": "pending",
+    "user": "692c18193096b46da13ac559"
+  },
+  {
+    "title": "Prototype development",
+    "description": "Create prototype for new product feature",
+    "priority": 2,
+    "deadline": "2026-01-05T15:00:00.000Z",
+    "status": "in progress",
+    "user": "692c18193096b46da13ac559"
+  },
+  {
+    "title": "Technical documentation",
+    "description": "Write technical documentation for architecture decisions",
+    "priority": 3,
+    "deadline": "2026-01-08T13:00:00.000Z",
+    "status": "pending",
+    "user": "692c18193096b46da13ac559"
+  },
+  {
+    "title": "Performance optimization",
+    "description": "Optimize application performance and reduce load times",
+    "priority": 1,
+    "deadline": "2025-12-29T14:00:00.000Z",
+    "status": "in progress",
+    "user": "692c18193096b46da13ac55c"
+  },
+  {
+    "title": "Refactoring legacy code",
+    "description": "Refactor old codebase to modern standards",
+    "priority": 2,
+    "deadline": "2026-01-10T16:00:00.000Z",
+    "status": "pending",
+    "user": "692c18193096b46da13ac55c"
+  },
+  {
+    "title": "Integration testing",
+    "description": "Perform integration testing across all modules",
+    "priority": 2,
+    "deadline": "2026-01-03T11:00:00.000Z",
+    "status": "pending",
+    "user": "692c18193096b46da13ac55c"
+  }
+]

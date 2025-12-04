@@ -17,7 +17,7 @@ export const protect = (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Attach user info to request
-    
+    console.log("🔐 User authenticated:", decoded);
     req.user = decoded;
 
     next();

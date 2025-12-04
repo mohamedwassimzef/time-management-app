@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import "./c3.css";
 import DayControl from "./DayControl";
 import { api } from "../services/api";
-
+import { useAuth } from "../context/AuthContext";
 export default function Calendar({ onDrawerChange }) {
   const [date, setDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
@@ -11,7 +11,7 @@ export default function Calendar({ onDrawerChange }) {
 
   const month = date.getMonth();
   const year = date.getFullYear();
-
+  const { user, token } = useAuth();
   useEffect(() => {
     fetchTasks();
   }, [drawerOpen]);
@@ -24,10 +24,11 @@ export default function Calendar({ onDrawerChange }) {
 
   const fetchTasks = async () => {
     try {
-      const res = await api.get("/tasks");
+      const res = await api.get("/tasks/user");
       setEvents(res.data);
     } catch (err) {
-      console.error("Error fetching tasks:", err);
+      console.error(`Error fetching tasks:`, err);
+      console.error(`Error response:`, err.response);
     }
   };
 

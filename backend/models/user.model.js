@@ -23,10 +23,7 @@ const userSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  dayKeyList: {
-    type: [String],
-    default: [],
-    },
+  
 },{timestamps:true});
 
 //hash password before saving

@@ -12,13 +12,14 @@ import AddIcon from "@mui/icons-material/Add";
 import { api } from "../services/api";
 import TaskItem from "./TaskItem";
 import TaskForm from "./TaskForm";
-
+import { useAuth } from "../context/AuthContext";
 
 // states
 export default function DayControl({ open, onClose, selectedDate }) {
   const [tasks, setTasks] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editTask, setEditTask] = useState(null);
+  const { user } = useAuth();
 // useEffect to fetch tasks when drawer opens or selectedDate changes
   useEffect(() => {
     if (open && selectedDate) fetchTasks();
@@ -43,15 +44,30 @@ export default function DayControl({ open, onClose, selectedDate }) {
     fetchTasks();
   };
 
-  const handleSave = async (task) => {
-    if (editTask) {
-      await api.patch(`/tasks/${editTask._id}`, task);
-    } else {
-      await api.post("/tasks", { ...task, deadline: selectedDate });
+  const handleSave = async (taskData) => {
+    if (!user) {
+      alert("Please log in to save tasks");
+      return;
     }
-    setShowForm(false);
-    setEditTask(null);
-    fetchTasks();
+    
+    try {
+      if (editTask) {
+        await api.patch(`/tasks/${editTask._id}`, taskData);
+      } else {
+        const newTask = {
+          ...taskData,
+          deadline: taskData.deadline || selectedDate,
+          user: user._id
+        };
+        await api.post("/tasks", newTask);
+      }
+      setShowForm(false);
+      setEditTask(null);
+      fetchTasks();
+    } catch (error) {
+      console.error("Error saving task:", error);
+      alert("Failed to save task. Please try again.");
+    }
   };
 
   return (
@@ -59,6 +75,8 @@ export default function DayControl({ open, onClose, selectedDate }) {
       anchor="right" 
       open={open} 
       onClose={onClose}
+      disableEnforceFocus={false}
+      disableRestoreFocus={false}
       PaperProps={{
         sx: {
           width: { xs: '100%', sm: '100%', md: 400 },
