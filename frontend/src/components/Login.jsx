@@ -17,7 +17,11 @@ export default function SignIn() {
 
     try {
       
-      const res = await api.post("/users/login", data);
+      const res = await api.post("/users/login",{
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }, data);
 
       const json = res.data;
 
