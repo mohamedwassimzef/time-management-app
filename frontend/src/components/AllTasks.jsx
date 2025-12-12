@@ -272,9 +272,10 @@ export default function AllTasks() {
   };
 
   const getPriorityColor = (priority) => {
-    if (priority >= 8) return "error";
-    if (priority >= 5) return "warning";
-    return "info";
+    // Lower priority numbers = more urgent (0 is most urgent)
+    if (priority <= 2) return "error";      // Red for high urgency (0-2)
+    if (priority <= 4) return "warning";    // Orange/yellow for medium urgency (3-4)
+    return "info";                          // Blue for low urgency (5+)
   };
 
   const calculateNewPriority = (abovePriority, belowPriority) => {

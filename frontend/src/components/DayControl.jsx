@@ -9,6 +9,18 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { api } from "../services/api";
 import TaskItem from "./TaskItem";
 import TaskForm from "./TaskForm";
@@ -19,7 +31,17 @@ export default function DayControl({ open, onClose, selectedDate }) {
   const [tasks, setTasks] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editTask, setEditTask] = useState(null);
+  const [activeId, setActiveId] = useState(null);
   const { user , token } = useAuth();
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
+
 // useEffect to fetch tasks when drawer opens or selectedDate changes
   useEffect(() => {
     if (open && selectedDate) fetchTasks();
@@ -38,7 +60,9 @@ export default function DayControl({ open, onClose, selectedDate }) {
           new Date(t.deadline).toDateString() ===
           new Date(selectedDate).toDateString()
       );
-      setTasks(sameDay);
+      // Sort by priority ascending (0 is most urgent, at the top)
+      const sortedTasks = sameDay.sort((a, b) => a.priority - b.priority);
+      setTasks(sortedTasks);
     } catch (err) {
       console.error("Error fetching tasks Day controller listing:", err);
       setTasks([]); // Set empty array on error
@@ -97,6 +121,90 @@ export default function DayControl({ open, onClose, selectedDate }) {
     }
   };
 
+  const calculateNewPriority = (abovePriority, belowPriority) => {
+    const diff = belowPriority - abovePriority;
+    if (diff === 0) {
+      return abovePriority;
+    } else if (diff === 1) {
+      return belowPriority;
+    } else if (diff > 1) {
+      return abovePriority + 1;
+    } else {
+      return Math.floor((abovePriority + belowPriority) / 2);
+    }
+  };
+
+  const handleDragStart = (event) => {
+    setActiveId(event.active.id);
+  };
+
+  const handleDragEnd = async (event) => {
+    const { active, over } = event;
+    setActiveId(null);
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const oldIndex = tasks.findIndex((task) => task._id === active.id);
+    const newIndex = tasks.findIndex((task) => task._id === over.id);
+
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const reorderedTasks = arrayMove(tasks, oldIndex, newIndex);
+    setTasks(reorderedTasks);
+
+    const movedTask = reorderedTasks[newIndex];
+    let newPriority;
+
+    if (newIndex === 0) {
+      if (reorderedTasks.length === 1) {
+        newPriority = 0;
+      } else {
+        const belowTask = reorderedTasks[1];
+        if (belowTask.priority === 0) {
+          newPriority = 0;
+        } else {
+          newPriority = Math.max(0, belowTask.priority - 1);
+        }
+      }
+    } else if (newIndex === reorderedTasks.length - 1) {
+      const aboveTask = reorderedTasks[newIndex - 1];
+      newPriority = aboveTask.priority + 1;
+    } else {
+      const aboveTask = reorderedTasks[newIndex - 1];
+      const belowTask = reorderedTasks[newIndex + 1];
+      
+      if (aboveTask.priority === 0 && belowTask.priority === 0) {
+        newPriority = 0;
+      } else if (aboveTask.priority === 0 && belowTask.priority > 0) {
+        newPriority = 1;
+      } else {
+        newPriority = calculateNewPriority(aboveTask.priority, belowTask.priority);
+        newPriority = Math.max(0, newPriority);
+      }
+    }
+
+    try {
+      await api.patch(`/tasks/user`, {
+        _id: movedTask._id,
+        priority: newPriority,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      fetchTasks();
+    } catch (error) {
+      console.error("Error updating task priority:", error);
+      setTasks(tasks);
+    }
+  };
+
+  const handleDragCancel = () => {
+    setActiveId(null);
+  };
+
   return (
     <Drawer 
       anchor="right" 
@@ -144,27 +252,39 @@ export default function DayControl({ open, onClose, selectedDate }) {
           mb: 2,
           display: { xs: showForm ? 'none' : 'block', md: 'block' }
         }}>
-          <List>
-            {tasks.length > 0 ? (
-              tasks.map((task) => (
-                <TaskItem
-                  
-                  task={task}
-                  
-                  onEdit={() => {
-                    console.log("Editing task:", task);
-                    setEditTask(task);
-                    setShowForm(true);
-                  }}
-                  onDelete={() => handleDelete(task._id)}
-                />
-              ))
-            ) : (
-              <Typography sx={{ mt: 2, color: "gray", fontSize: { xs: '14px', sm: '16px' } }}>
-                No tasks for this day.
-              </Typography>
-            )}
-          </List>
+          {tasks.length > 0 ? (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onDragCancel={handleDragCancel}
+            >
+              <SortableContext
+                items={tasks.map((task) => task._id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <List>
+                  {tasks.map((task) => (
+                    <TaskItem
+                      key={task._id}
+                      task={task}
+                      onEdit={() => {
+                        console.log("Editing task:", task);
+                        setEditTask(task);
+                        setShowForm(true);
+                      }}
+                      onDelete={() => handleDelete(task._id)}
+                    />
+                  ))}
+                </List>
+              </SortableContext>
+            </DndContext>
+          ) : (
+            <Typography sx={{ mt: 2, color: "gray", fontSize: { xs: '14px', sm: '16px' } }}>
+              No tasks for this day.
+            </Typography>
+          )}
         </Box>
 
         <Button

@@ -17,8 +17,8 @@ const taskSchema = new mongoose.Schema({
   },
   priority: {
     type: Number,
-    min: 0, // highest priority
-    default: 5, // lowest priority by default
+    min: 0, // highest priority (most urgent)
+    default: 5, // low priority by default (least urgent)
   },
   deadline: {
     type: Date, // includes date + time
