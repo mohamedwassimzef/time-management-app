@@ -16,27 +16,23 @@ export default function SignIn() {
     setLoading(true);
 
     try {
-      
-      const res = await api.post("/users/login",{
+      const res = await api.post("/users/login", data, {
         headers: {
           'Content-Type': 'application/json'
         }
-      }, data);
+      });
 
       const json = res.data;
 
-      if (!res.ok) {
-        alert(json.message || "Login failed");
-      } else {
-        // Save token in localStorage
-        console.log(json);
-        localStorage.setItem("token", json.token);
-        login(json.user, json.token);
-        navigate("/");
-      }
+      // Save token in localStorage
+      console.log(json);
+      localStorage.setItem("token", json.token);
+      login(json.user, json.token);
+      navigate("/");
 
     } catch (err) {
       console.error(err);
+      alert(err.response?.data?.message || "Login failed");
     }
 
     setLoading(false);
