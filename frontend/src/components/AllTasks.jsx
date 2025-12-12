@@ -22,21 +22,139 @@ import EditIcon from "@mui/icons-material/Edit";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
+import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { api } from "../services/api";
 import TaskForm from "./TaskForm";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
+// Sortable Task Item Component
+function SortableTaskItem({ task, onEdit, onDelete, getStatusColor, getPriorityColor }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: task._id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <Card
+      ref={setNodeRef}
+      style={style}
+      elevation={2}
+      sx={{ mb: 2 }}
+    >
+      <CardContent>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <Box sx={{ display: "flex", gap: 1, alignItems: "flex-start", flex: 1 }}>
+            <IconButton
+              {...attributes}
+              {...listeners}
+              sx={{ cursor: "grab", "&:active": { cursor: "grabbing" }, mt: -1 }}
+            >
+              <DragIndicatorIcon />
+            </IconButton>
+            <Box sx={{ flex: 1 }}>
+              <Typography variant="h6" component="h2" sx={{ mb: 1 }}>
+                {task.title}
+              </Typography>
+              {task.description && (
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  {task.description}
+                </Typography>
+              )}
+              {task.notes && (
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2, fontStyle: "italic" }}>
+                  Notes: {task.notes}
+                </Typography>
+              )}
+              <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", alignItems: "center" }}>
+                <Chip
+                  label={`Status: ${task.status}`}
+                  color={getStatusColor(task.status)}
+                  size="small"
+                />
+                <Chip
+                  label={`Priority: ${task.priority}`}
+                  color={getPriorityColor(task.priority)}
+                  size="small"
+                />
+                {task.deadline && (
+                  <Chip
+                    label={new Date(task.deadline).toLocaleString()}
+                    variant="outlined"
+                    size="small"
+                  />
+                )}
+              </Box>
+            </Box>
+          </Box>
+          <Box sx={{ display: "flex", gap: 1, ml: 2 }}>
+            <IconButton
+              edge="end"
+              aria-label="edit"
+              onClick={() => onEdit(task)}
+              color="primary"
+            >
+              <EditIcon />
+            </IconButton>
+            <IconButton
+              edge="end"
+              aria-label="delete"
+              onClick={() => onDelete(task._id)}
+              color="error"
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Box>
+        </Box>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function AllTasks() {
   const [tasks, setTasks] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editTask, setEditTask] = useState(null);
+  const [activeId, setActiveId] = useState(null);
   const { user, token } = useAuth();
   const navigate = useNavigate();
   const [mode, setMode] = useState(() => {
     const saved = localStorage.getItem('theme-mode');
     return saved || 'light';
   });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
 
   const theme = useMemo(
     () =>
@@ -84,7 +202,10 @@ export default function AllTasks() {
           Authorization: `Bearer ${token}`,
         },
       });
-      setTasks(Array.isArray(res.data) ? res.data : []);
+      const tasksData = Array.isArray(res.data) ? res.data : [];
+      // Sort by priority ascending (0 is most urgent, at the top)
+      const sortedTasks = tasksData.sort((a, b) => a.priority - b.priority);
+      setTasks(sortedTasks);
     } catch (err) {
       console.error("Error fetching tasks:", err);
       setTasks([]);
@@ -156,6 +277,121 @@ export default function AllTasks() {
     return "info";
   };
 
+  const calculateNewPriority = (abovePriority, belowPriority) => {
+    const n = abovePriority;
+    const m = belowPriority;
+    const diff = n - m;
+
+    if (diff === 0) {
+      return n;
+    } else if (diff === 1) {
+      return m;
+    } else if (diff > 1) {
+      return n - 1;
+    } else {
+      // If diff is negative (shouldn't happen if sorted correctly), return average
+      return Math.floor((n + m) / 2);
+    }
+  };
+
+  const handleDragStart = (event) => {
+    setActiveId(event.active.id);
+  };
+
+  const handleDragEnd = async (event) => {
+    const { active, over } = event;
+    setActiveId(null);
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const oldIndex = tasks.findIndex((task) => task._id === active.id);
+    const newIndex = tasks.findIndex((task) => task._id === over.id);
+
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    // Reorder tasks array
+    const reorderedTasks = arrayMove(tasks, oldIndex, newIndex);
+    setTasks(reorderedTasks);
+
+    // Calculate new priority based on position
+    // Note: Tasks are sorted in ascending order (0 at top, higher numbers at bottom)
+    const movedTask = reorderedTasks[newIndex];
+    let newPriority;
+
+    if (newIndex === 0) {
+      // Moved to top (most urgent position)
+      if (reorderedTasks.length === 1) {
+        newPriority = 0; // Only task, make it priority 0
+      } else {
+        const belowTask = reorderedTasks[1];
+        // Dragging to top should get priority 0 or lower than the task below
+        if (belowTask.priority === 0) {
+          newPriority = 0;
+        } else {
+          // Set priority lower than the task below (more urgent)
+          newPriority = Math.max(0, belowTask.priority - 1);
+        }
+      }
+    } else if (newIndex === reorderedTasks.length - 1) {
+      // Moved to bottom (least urgent position)
+      const aboveTask = reorderedTasks[newIndex - 1];
+      // Set priority higher than the task above (less urgent)
+      newPriority = aboveTask.priority + 1;
+    } else {
+      // Moved between two tasks
+      const aboveTask = reorderedTasks[newIndex - 1];
+      const belowTask = reorderedTasks[newIndex + 1];
+      
+      // Special cases for priority 0 tasks
+      if (aboveTask.priority === 0 && belowTask.priority === 0) {
+        // Between two priority 0 tasks
+        newPriority = 0;
+      } else if (aboveTask.priority === 0 && belowTask.priority > 0) {
+        // Between priority 0 and priority m (where m > 0)
+        newPriority = 1;
+      } else {
+        // Normal case - calculate priority between above and below
+        const diff = belowTask.priority - aboveTask.priority;
+        if (diff === 0) {
+          newPriority = aboveTask.priority;
+        } else if (diff === 1) {
+          newPriority = belowTask.priority;
+        } else if (diff > 1) {
+          newPriority = aboveTask.priority + 1;
+        } else {
+          // Shouldn't happen if sorted correctly
+          newPriority = Math.floor((aboveTask.priority + belowTask.priority) / 2);
+        }
+        // Ensure minimum priority is 0
+        newPriority = Math.max(0, newPriority);
+      }
+    }
+
+    // Update priority in backend
+    try {
+      await api.patch(`/tasks/user`, {
+        _id: movedTask._id,
+        priority: newPriority,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      // Refresh tasks to get updated data
+      fetchTasks();
+    } catch (error) {
+      console.error("Error updating task priority:", error);
+      // Revert on error
+      setTasks(tasks);
+    }
+  };
+
+  const handleDragCancel = () => {
+    setActiveId(null);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -215,71 +451,32 @@ export default function AllTasks() {
 
           <Box sx={{ mb: 3 }}>
             {tasks.length > 0 ? (
-              <List sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                {tasks.map((task) => (
-                  <Card key={task._id} elevation={2}>
-                    <CardContent>
-                      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                        <Box sx={{ flex: 1 }}>
-                          <Typography variant="h6" component="h2" sx={{ mb: 1 }}>
-                            {task.title}
-                          </Typography>
-                          {task.description && (
-                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                              {task.description}
-                            </Typography>
-                          )}
-                          {task.notes && (
-                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2, fontStyle: "italic" }}>
-                              Notes: {task.notes}
-                            </Typography>
-                          )}
-                          <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", alignItems: "center" }}>
-                            <Chip
-                              label={`Status: ${task.status}`}
-                              color={getStatusColor(task.status)}
-                              size="small"
-                            />
-                            <Chip
-                              label={`Priority: ${task.priority}`}
-                              color={getPriorityColor(task.priority)}
-                              size="small"
-                            />
-                            {task.deadline && (
-                              <Chip
-                                label={new Date(task.deadline).toLocaleString()}
-                                variant="outlined"
-                                size="small"
-                              />
-                            )}
-                          </Box>
-                        </Box>
-                        <Box sx={{ display: "flex", gap: 1, ml: 2 }}>
-                          <IconButton
-                            edge="end"
-                            aria-label="edit"
-                            onClick={() => {
-                              setEditTask(task);
-                              setShowForm(true);
-                            }}
-                            color="primary"
-                          >
-                            <EditIcon />
-                          </IconButton>
-                          <IconButton
-                            edge="end"
-                            aria-label="delete"
-                            onClick={() => handleDelete(task._id)}
-                            color="error"
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </Box>
-                      </Box>
-                    </CardContent>
-                  </Card>
-                ))}
-              </List>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+                onDragCancel={handleDragCancel}
+              >
+                <SortableContext
+                  items={tasks.map((task) => task._id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {tasks.map((task) => (
+                    <SortableTaskItem
+                      key={task._id}
+                      task={task}
+                      onEdit={(task) => {
+                        setEditTask(task);
+                        setShowForm(true);
+                      }}
+                      onDelete={handleDelete}
+                      getStatusColor={getStatusColor}
+                      getPriorityColor={getPriorityColor}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
             ) : (
               <Card elevation={2}>
                 <CardContent>

@@ -18,10 +18,10 @@ export const createTask = async (req, res) => {
   }
 };
 
-// Get all tasks (sorted by priority: lowest first)
+// Get all tasks (sorted by priority: lowest first - 0 is most urgent)
 export const getTasks = async (req, res) => {
   try {
-    const tasks = await Task.find().sort({ priority: -1 });
+    const tasks = await Task.find().sort({ priority: 1 });
     res.status(200).json(tasks);
     console.log("✅ Retrieved tasks:");
   } catch (error) {
@@ -49,7 +49,7 @@ export const getTasksByUser = async (req, res) => {
     console.log("🔵 GET TASKS BY USER ENDPOINT HIT");
     console.log("📥 req.user.userId:", req.user.userId);
     const userId = new mongoose.Types.ObjectId(req.user.userId);
-    const tasks = await Task.find({ user: userId }).sort({ priority: -1 });
+    const tasks = await Task.find({ user: userId }).sort({ priority: 1 });
     res.status(200).json(tasks);
     console.log("✅ Retrieved tasks for user:", req.user.userId);
 
