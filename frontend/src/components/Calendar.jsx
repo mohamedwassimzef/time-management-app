@@ -3,6 +3,7 @@ import { ThemeProvider, createTheme, CssBaseline, IconButton, Box, Button } from
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import LogoutIcon from "@mui/icons-material/Logout";
+import ListAltIcon from "@mui/icons-material/ListAlt";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import CalendarView from "./CalendarView";
@@ -92,22 +93,37 @@ function Calendar() {
           {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
         </IconButton>
         
-        <Button
-          onClick={handleLogout}
-          startIcon={<LogoutIcon />}
-          variant="outlined"
-          sx={{
-            position: 'fixed',
-            top: { xs: 8, sm: 16 },
-            left: { xs: 8, sm: 16 },
-            zIndex: 1300,
-            bgcolor: 'background.paper',
-            display: drawerOpen ? 'none' : 'flex',
-            minHeight: 44,
-          }}
-        >
-          Logout
-        </Button>
+        <Box sx={{ 
+          position: 'fixed',
+          top: { xs: 8, sm: 16 },
+          left: { xs: 8, sm: 16 },
+          zIndex: 1300,
+          display: drawerOpen ? 'none' : 'flex',
+          gap: 1,
+          flexDirection: { xs: 'column', sm: 'row' }
+        }}>
+          <Button
+            onClick={handleLogout}
+            startIcon={<LogoutIcon />}
+            variant="outlined"
+            sx={{
+              bgcolor: 'background.paper',
+              minHeight: 44,
+            }}
+          >
+            Logout
+          </Button>
+          <Button
+            onClick={() => navigate("/all-tasks")}
+            startIcon={<ListAltIcon />}
+            variant="contained"
+            sx={{
+              minHeight: 44,
+            }}
+          >
+            All Tasks
+          </Button>
+        </Box>
         
         <Box sx={{ width: '100%', maxWidth: '100%', px: { xs: 0, sm: 2 } }}>
           <C3 onDrawerChange={setDrawerOpen} />
