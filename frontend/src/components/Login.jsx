@@ -4,6 +4,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {useAuth } from "../context/AuthContext";
+import { api } from "../services/api";
 export default function SignIn() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -15,13 +16,10 @@ export default function SignIn() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/users/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      
+      const res = await api.post("/users/login", data);
 
-      const json = await res.json();
+      const json = res.data;
 
       if (!res.ok) {
         alert(json.message || "Login failed");
